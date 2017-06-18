@@ -1,0 +1,40 @@
+<!-- B581 Fall 2015 - Lab 2 -->       
+<!-- Qiuwei, Shou-->       
+<!-- qiuwshou@umail.iu.edu -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>WebGL quasi-minimalism</title>
+		<!-- evoke vertex shader -->
+        <script id="vertex-shader" type="x-shader/x-vertex" >
+            attribute vec4 vPosition;
+            void main() {
+              gl_Position = vPosition;
+            }
+        </script>
+         <!-- evoke fragement shader to define the color -->
+        <script id="fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
+       
+            void  main() {
+              gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
+            }
+        </script>
+        <script type="text/javascript" src="B581-lab-2-starting-text.js"></script> 
+	</head>
+	<body>
+		<h1>
+			WebGL quasi-minimalism
+		</h1>
+		<canvas id="gl-canvas" width="256" height="192">
+		<!-- define a region where we want to place our object -->
+			Your web browser doesn't support the HTML5 &lt;canvas&gt; element,
+			or JavaScript is disabled.
+		</canvas>
+		<hr>
+		<div id="debug-label">
+			WebGL quasi-minimalism
+		</div>
+	</body>
+</html>

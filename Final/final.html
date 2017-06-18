@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="us-ascii" />
+        <title>B581 - Lighting - Fall 2015</title>
+        <script id="vertex-shader-MVP" type="x-shader/x-vertex">
+        
+
+            precision mediump float;
+            attribute vec3 a_vertex;
+            attribute vec3 normal;
+            attribute vec3 color;
+            attribute vec2 vTexCoord;
+            
+
+            // uniform vec3 color;
+                  
+            uniform mat4 Model_Matrix;
+            uniform mat4 View_Matrix;
+            uniform mat4 Proj_Matrix;
+            
+                  
+            uniform vec3 u_lightDir0;
+            uniform vec3 u_lightColor0;
+                    
+            // not yet used:
+            uniform vec3 u_lightPos1;
+            uniform vec3 u_lightColor1;
+                    
+            // not yet used:
+            uniform vec3 u_lightPos2;
+            uniform vec3 u_lightDir2;
+            uniform vec3 u_lightColor2;
+            uniform float u_lightCosCutoff2;
+
+            // light * material products computed in Javascript:
+            uniform vec4 ambientProduct;
+            uniform vec4 diffuseProduct;
+            uniform vec4 specularProduct;
+            uniform float shininess;
+
+            // outputs for fragment shader:
+            //
+            // color computed by illumination at current vertex:
+            varying vec4 vOutColor;
+
+            // if illumination is to be computed in fragment shader
+            // (not yet implemented here),
+            // provide normal and position vectors to the fragment shader instead:
+            varying vec3 vOutNormal;
+            varying vec3 vOutPosition;
+            varying vec2 fTexCoord;
+
+
+            
+            void main() {
+                //
+                // geometry:
+                //
+                fTexCoord = vTexCoord;
+
+                // compute model-view-projection matrix for vertices:
+                mat4 mvpMat = Proj_Matrix * View_Matrix * Model_Matrix;
+                
+                // compute model-view matrix for vertices:
+                mat4 mvMat = View_Matrix * Model_Matrix;
+
+                // compute model-view matrix for normals:
+                mat4 normalMat = mvMat;
+                //   see http://www.lighthouse3d.com/tutorials/glsl-12-tutorial/the-normal-matrix/
+                // mat4 normalMat = transpose(inverse(mvMat));
+
+                // output (varying) variables,
+                //    from this vertex shader to the fragment shader:
+                
+                // compulsory GLSL output: vertex position in clip coordinates
+                gl_Position = mvpMat * vec4(a_vertex, 1.0);
+                
+                // computed vertex position in camera frame:
+                vOutPosition = vec3 ( mvMat * vec4(a_vertex, 1.0) );
+
+                // computed normal vector in camera frame:
+                vOutNormal = vec3 ( normalMat * vec4(normal, 0.0) );
+
+                vec3 normalDirection;
+                vec3 lightDirection;
+                float attenuation;
+
+                attenuation = 1.0; // no attenuation
+                normalDirection = normalize( vec3(normalMat * vec4(normal, 0.0)) );
+                lightDirection = normalize( vec3(u_lightDir0) );
+ 
+                vec3 diffuseReflection = attenuation *
+                   vec3(diffuseProduct) *
+                   max(0.0, dot(normalDirection, lightDirection));
+ 
+                vOutColor = vec4(diffuseReflection, 1.0);
+         }
+         
+         
+         
+         
+        </script>
+
+
+        <script id="fragment-shader-3-lights" type="x-shader/x-fragment">
+            precision mediump float;
+                  
+            varying vec4 vOutColor;
+            
+            void main() {
+                // pass the color straigt through from vertex shader:
+                gl_FragColor = vOutColor;
+                // gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            }
+        </script>
+
+        <script id="fragment-shader-x" type="x-shader/x-fragment">
+            precision mediump float;
+                  
+            //varying vec4 vOutColor;
+            
+            void main() {
+                // pass the color straigt through from vertex shader:
+                //gl_FragColor = vOutColor;
+                 gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+            }
+        </script>
+        <script id="fragment-shader-y" type="x-shader/x-fragment">
+            precision mediump float;
+                  
+            //varying vec4 vOutColor;
+            
+            void main() {
+                // pass the color straigt through from vertex shader:
+                //gl_FragColor = vOutColor;
+                 gl_FragColor = vec4(0, 0.0, 1.0, 1.0);
+            }
+        </script>
+        <script id="fragment-shader-z" type="x-shader/x-fragment">
+            precision mediump float;
+                  
+            //varying vec4 vOutColor;
+            
+            void main() {
+                // pass the color straigt through from vertex shader:
+                //gl_FragColor = vOutColor;
+                 gl_FragColor = vec4(0, 1.0, 0.0, 1.0);
+            }
+        </script>
+
+        <script id="fragment-shader-t" type="x-shader/x-fragment">
+            precision mediump float;
+                  
+            //varying vec4 vOutColor;
+            
+            void main() {
+                // pass the color straigt through from vertex shader:
+                //gl_FragColor = vOutColor;
+                 gl_FragColor = vec4(0, 1.0, 0.0, 1.0);
+            }
+        </script>
+
+        <!-- import WebGL-related Javascript libraries (Angel book 7th ed.) : -->
+        <script type="text/javascript" src="./Common/webgl-utils.js"></script>
+        <script type="text/javascript" src="./Common/initShaders.js"></script>
+        <script type="text/javascript" src="./Common/MV.js"></script>
+        <script type="text/javascript" src="./axisX.js"></script>
+        <script type="text/javascript" src="./axisY.js"></script>
+        <script type="text/javascript" src="./axisZ.js"></script>
+        <script type="text/javascript" src="./model.js"></script>
+        <script type="text/javascript" src="./cube.js"></script>
+
+        <!-- import our main Javascript program: -->
+        <script type="text/javascript" src="./final.js"></script> 
+
+
+
+    </head>
+    <body bgcolor="#DDEEDD">
+        <h2>B581 - a2 - Fall 2015</h2>
+        <h4>Qiuwei Shou</h4>
+        <canvas id="gl-canvas" width="512" height="512" style="background: red;">
+            Your web browser doesn't support the HTML5 &lt;canvas&gt; element,
+            or JavaScript is disabled.
+        </canvas>
+        <hr>
+        
+        <!-- button controls: -->
+    <!--     <button id = "ButtonTxy">T(x,y)</button>
+        <button id = "ButtonTyz">T(x,z)</button>
+        <button id = "ButtonRroll">R(rolling ball)</button>
+        <!-- <button id = "R(z)">ButtonRz</button> -->
+   <!--      <button id = "Switch">Camera/Object</button><br> --> 
+        <input type="radio" name="select" id="model" checked >model
+        <input type="radio" name="select" id="camera">camera
+        <input type="radio" name="select" id="current">current<br>
+        <input type="radio" name="debug" id="show"  checked>show
+        <input type="radio" name="debug" id="hide">hide<br>
+        <input type="radio" name="control" id="x-y" value= "x-y" checked >x-y
+        <input type="radio" name="control" id="x-z" value = "x-z">x-z
+        
+        <hr>
+        <div id="debug-label"> Debugging Information Goes Here </div>
+        <hr>
+        <div id="debug-label-2"> (you may place more debug info here) </div>
+
+    </body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+    <head>
+        <meta charset="us-ascii" />
+        <title>B581 - 2D Demo - Fall 2015</title>
+        <script id="vertex-shader-MVP" type="x-shader/x-vertex">
+
+            attribute vec4 a_Position;
+            uniform   mat4 u_M_Matrix;
+            uniform   mat4 u_V_Matrix;
+            uniform   mat4 u_P_Matrix;
+            varying vec2 fPosition;
+
+            void main() {
+               gl_Position =  u_P_Matrix * u_V_Matrix * u_M_Matrix * vec4(a_Position.xyz, 1.0);
+               gl_PointSize = 10.0;
+               fPosition   = gl_Position.xy;
+            }
+
+        </script>
+        <script id="fragment-shader-basic" type="x-shader/x-fragment">
+
+            precision mediump float;
+
+            // B581-TODO: you may need to provide some color here.
+
+            // B581-thus:
+            uniform vec3 u_drawColor;
+
+            void main() {
+               gl_FragColor = vec4 (1.0);
+
+               // B581-TODO: you may need to use some color here.
+
+               // B581-thus:
+               gl_FragColor = vec4 ( u_drawColor, 1.0 );
+
+            }
+        </script>
+
+        <script id="fragment-shader-Solid" type="x-shader/x-fragment">
+
+            precision mediump float;
+
+            void main() {
+               gl_FragColor = vec4( 1.0, 1.0, 0 , 1.0 );
+
+            }
+        </script>
+         <script id="fragment-shader-Brick" type="x-shader/x-fragment">
+            precision mediump float;
+
+            uniform vec3  BrickColor, MortarColor;
+            uniform vec2  BrickSize;
+            uniform vec2  BrickPct;
+
+            // the value for fPosition is received (interpolated)
+            //   from the fragment shader:
+            varying vec2  fPosition;
+
+            void main() {
+                vec3  color;
+                vec2  position, useBrick;
+                position = fPosition / BrickSize;
+
+                if (fract(position.y * 0.5) > 0.5) {
+                    position.x += 0.5;
+                }
+                // this is my position:
+                position = fract(position);
+
+                useBrick = step(position, BrickPct);
+                color = mix(MortarColor, BrickColor, useBrick.x * useBrick.y);
+                gl_FragColor = vec4(color, 1.0);
+            }
+        </script>
+
+         <script id="fragment-shader-Checker" type="x-shader/x-fragment">
+            precision mediump float;
+            varying vec2 fPosition;
+            void main(){
+                //vec2 position;
+                float x = 0.5*(fPosition.x + 1.0);
+                float y = 0.5*(fPosition.y + 1.0);
+
+                if((mod(4.0*x, 1.0)<0.5) && (mod(4.0*y, 1.0)<0.5)){
+                    gl_FragColor = vec4(0,0,0,1);
+                }
+                else{
+                    gl_FragColor = vec4(1,1,1,1);
+                }
+
+
+            }
+
+
+
+
+         </script>      
+ 
+
+        <script id="fragment-shader-Bilinear" type="x-shader/x-fragment">
+            precision mediump float;
+        
+            
+            varying vec2 fPosition;
+            //vec4 vColor;
+            void  main() {
+              
+              //vColor = vec4( 0.0, abs(fPosition.x) ,abs(fPosition.y),1.0);
+              gl_FragColor = vec4( 0.0, abs(fPosition.x) ,abs(fPosition.y),1.0);
+            }
+        </script>
+
+
+        <!-- import WebGL-related Javascript libraries (Angel book 7th ed.) : -->
+        <script type="text/javascript" src="./Common/webgl-utils.js"></script>
+        <script type="text/javascript" src="./Common/initShaders.js"></script>
+        <script type="text/javascript" src="./Common/MV.js"></script>
+
+        <!-- import our main Javascript program: -->
+        <script type="text/javascript" src="./B581-2D-demo.js"></script> 
+    </head>
+
+    <body bgcolor="#DDDDDD">
+        <h2>B581 - 2D Demo - Fall 2015</h2>
+        <h4>Mitja Hmeljak</h4>
+        <canvas id="gl-canvas" width="512" height="512">
+            Your web browser doesn't support the HTML5 &lt;canvas&gt; element,
+            or JavaScript is disabled.
+        </canvas>
+        <hr>
+        
+        <!-- button controls: -->
+        <button id = "New">New</button>
+        <button id = "Select">Select</button>
+       
+        
+        <form>
+        <input type= "radio" name= "Fill" value="Solid" id = "Solid" > Solid
+        <input type= "radio" name= "Fill" value="Brick" id = "Brick"> Brick
+        <input type= "radio" name= "Fill" value="Checkerboard" id = "Checker"> Checkerboard
+        <input type= "radio" name= "Fill" value="Bilinear" id =  "Bilinear"> Bilinear
+        </form>
+        
+        <form>
+        <input type= "radio" name= "Projection" value= "Polygon" id= "Polygon"> Polygon
+        <input type= "radio" name= "Projection" value= "Camera" id= "Camera"> Camera     
+        </form>
+        
+        <form>
+        <input type= "radio" name= "Modification" value= "Edit" id= "Edit"> Edit
+        <input type= "radio" name= "Modification" value="Transform" id= "Transform"> Transform
+        </form>
+        
+        <form>
+        <input type= "radio" name= "Transform" value="Translate" id= "Translate"> Translate
+        <input type= "radio" name= "Transform" value="Rotate" id= "Rotate"> Rotate
+        <input type= "radio" name= "Transform" value="Scale" id= "Scale"> Scale
+        </form>
+        <hr>
+        <div id="debug-label"> Debugging Information Goes Here </div>
+        <hr>
+        <div id="debug-label-2"> (you may place more debug info here) </div>
+
+    </body>
+</html>

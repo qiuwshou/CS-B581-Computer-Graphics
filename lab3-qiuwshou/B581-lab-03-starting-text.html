@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="iso-8859-1" />
+		<title>B581 - Lab 03 - Fall 2015</title>
+        <script id="vertex-shader" type="x-shader/x-vertex">
+            uniform mat4 modelViewMatrix;
+            uniform mat4 projectionMatrix;
+            attribute vec4 vPosition;
+
+            // define a varying variable:
+            varying vec2 fPosition;
+
+            void main() {
+                gl_Position   = projectionMatrix * modelViewMatrix * vPosition;
+                // the value for fPosition is set in this vertex shader,
+                //   then it goes through the interpolator before being
+                //   received (interpolated!) by a fragment shader:
+                fPosition     = gl_Position.xy;
+            }
+
+        </script>
+        <script id="fragment-shader-bricks" type="x-shader/x-fragment">
+            precision mediump float;
+
+            uniform vec3  BrickColor, MortarColor;
+            uniform vec2  BrickSize;
+            uniform vec2  BrickPct;
+
+            // the value for fPosition is received (interpolated)
+            //   from the fragment shader:
+            varying vec2  fPosition;
+
+            void main() {
+                vec3  color;
+                vec2  position, useBrick;
+                position = fPosition / BrickSize;
+
+                if (fract(position.y * 0.5) > 0.5) {
+                    position.x += 0.5;
+                }
+                // this is my position:
+                position = fract(position);
+
+                useBrick = step(position, BrickPct);
+                color = mix(MortarColor, BrickColor, useBrick.x * useBrick.y);
+                gl_FragColor = vec4(color, 1.0);
+            }
+        </script>
+        <script id="fragment-shader-colorfill" type="x-shader/x-fragment">
+            precision mediump float;
+            
+            
+            //attribute vec4 vPosition;
+            
+            //varing vec4 fColor;
+            // TODO: declare the varying variable fPosition as from the vertex shader:
+            // varying ...
+            
+            varying vec2 fPosition;
+            vec4 vColor;
+            void  main() {
+              // TODO: use the varying fPosition variable from the vertex shader
+              //   to set Green and Blue values smoothly varying within the square:
+              //   from colors on the sides, to black in the center of the square,
+              //   as from example figure in instructions. Hint: you may use abs(...)
+              
+              vColor = vec4( 0.0, abs(fPosition.x) ,abs(fPosition.y),1.0);
+              gl_FragColor = vColor;
+            }
+        </script>
+        <script type="text/javascript" src="B581-lab-03-starting-text.js"></script> 
+	</head>
+	<body bgcolor="#AAAAAA">
+		<h1>B581 - Lab 03 - Fall 2015</h1>
+		<canvas id="gl-canvas" width="512" height="512">
+			Your web browser doesn't support the HTML5 &lt;canvas&gt; element,
+			or JavaScript is disabled.
+		</canvas>
+		<hr>
+		<div id="debug-label">B581 - Lab 03 - Fall 2015</div>
+	</body>
+</html>
+
+<!-- 
+Local Variables:
+coding: ISO-8859-1
+End:
+ -->

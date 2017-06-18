@@ -1,0 +1,71 @@
+<!-- B581 Fall 2015 - Lab 5 -->       
+<!-- (First, Last) -->       
+<!--  qiuwshou@umail.iu.edu -->
+<html lang="en">
+	<head>
+		<meta charset="iso-8859-1" />
+		<title>WebGL fragment shader programming</title>
+        <script id="vertex-shader" type="x-shader/x-vertex">
+        //uniform varibales are read from vertec-shader
+            uniform mat4 modelViewMatrix;
+            uniform mat4 projectionMatrix;
+            attribute vec4 vPosition;
+            varying vec2 MCposition;
+
+            void main() {
+
+                gl_Position    = projectionMatrix * modelViewMatrix * vPosition;
+                //MCposition restores the (x,y) of pixel 
+                MCposition     = gl_Position.xy;
+            }
+
+        </script>
+        <script id="fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
+            //those data are read from fragment-shader
+            uniform vec3  BrickColor, MortarColor;
+            uniform vec2  BrickSize;
+            uniform vec2  BrickPct;
+
+            varying vec2  MCposition;
+            
+
+            void main() {
+               //new variable color since we can't modify uniform variables 
+                vec3  color;
+                vec2  position, useBrick;
+
+                
+                position = MCposition / BrickSize;
+
+                if (fract(position.y * 0.5) > 0.5) {
+                //distance of x that between the bricks of different height
+                    position.x += 0.5;
+                }
+                // this is my position:
+                position = fract(position);
+
+                useBrick = step(position, BrickPct);
+                //we need to modify the brickcolor and Mortarcolor in render function 
+                color = mix(MortarColor, BrickColor, useBrick.x * useBrick.y);
+                gl_FragColor = vec4(color, 1.0);
+            }
+        </script>
+        <script type="text/javascript" src="B581-lab-5-starting-text.js"></script> 
+	</head>
+	<body>
+		<h1>WebGL fragment shader programming</h1>
+		<canvas id="gl-canvas" width="256" height="192">
+			Your web browser doesn't support the HTML5 &lt;canvas&gt; element,
+			or JavaScript is disabled.
+		</canvas>
+		<hr>
+		<div id="debug-label">WebGL fragment shader programming</div>
+	</body>
+</html>
+
+<!-- 
+Local Variables:
+coding: ISO-8859-1
+End:
+ -->

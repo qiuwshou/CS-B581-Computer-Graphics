@@ -1,0 +1,39 @@
+<!--- B581 Fall 2015 - lab 04 -->
+<!--- Qiuwei, Shou            -->
+<!--  qiuwshou@umail.iu.edu   -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>WebGL simple 2D transformations</title>
+        <script id="vertex-shader" type="x-shader/x-vertex">
+            uniform mat4 modelViewMatrix;
+            uniform mat4 projectionMatrix;
+            attribute vec4 vPosition;
+
+            void main() {
+                gl_Position = projectionMatrix * modelViewMatrix * vPosition;                
+            }
+        </script>
+        <script id="fragment-shader" type="x-shader/x-fragment">
+            precision mediump float;
+            void  main() {
+              gl_FragColor = vec4( 0.1, 0.4, 0.6, 1.0 );
+            }
+        </script>
+        <script type="text/javascript" src="B581-lab-04-starting-text.js"></script> 
+	</head>
+	<body>
+		<h1>WebGL simple 2D transformations</h1>
+		<canvas id="gl-canvas" width="512" height="512">
+			Your web browser doesn't support the HTML5 &lt;canvas&gt; element,
+			or JavaScript is disabled.
+		</canvas>
+		<hr>
+		<input type="button" value = "Left!" onClick = "turn_left()">
+		<input type="button" value = "Right!" onClick = "turn_right()">
+		<input type="button" value = "Up!" onClick = "move_up()">
+		<input type="button" value = "Down!" onClick = "move_down()">
+		<div id="debug-label">WebGL simple 2D transformations</div>
+	</body>
+</html>
